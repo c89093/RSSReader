@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  MainView.h
 //  RSSReader
 //
 //  Created by JY on 2016/6/6.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface MainView : UIView
 
 @end
-
