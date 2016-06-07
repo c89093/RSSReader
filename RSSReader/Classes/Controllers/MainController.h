@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MWFeedParser.h"
 
-@interface MainController : UIViewController
+@interface MainController : UIViewController<MWFeedParserDelegate>
+
+@property (nonatomic, strong) NSMutableArray *parsedItems;
 
 @end
