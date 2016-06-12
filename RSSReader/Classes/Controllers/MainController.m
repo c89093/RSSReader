@@ -39,10 +39,12 @@
     self.mainView = [[MainView alloc] initWithFrame:self.view.frame];
     self.view = self.mainView;
     
-    //default set
-    self.mainView.weatherView.tempLabel.text = [NSString stringWithFormat:@"%@-%@℃", [[[TodayWeather allObjects][0] valueForKey:@"todayWeatherAM"][0] valueForKey:@"tempMinAM"], [[[TodayWeather allObjects][0] valueForKey:@"todayWeatherAM"][0] valueForKey:@"tempMaxAM"]];
-    self.mainView.weatherView.weatherLabel.text = [NSString stringWithFormat:@"%@", [[[TodayWeather allObjects][0] valueForKey:@"todayWeatherAM"][0] valueForKey:@"weatherAM"]];
+    [self dailySentenceParser];
 
+    if ([TodayWeather allObjects].count != 0) {
+        [self loadData];
+    }
+    
     self.week = [[NSMutableArray alloc] init];
     self.weekAM = [[NSMutableArray alloc] init];
     self.weekPM = [[NSMutableArray alloc] init];
@@ -61,6 +63,11 @@
     [self.mainView.weatherView.changeTimeButton addTarget:self action:@selector(changeTimeAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.mainView.selectView.todayButton addTarget:self action:@selector(todayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.mainView.selectView.weeklyButton addTarget:self action:@selector(weeklyButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)loadData {
+    self.mainView.weatherView.tempLabel.text = [NSString stringWithFormat:@"%@-%@℃", [[[TodayWeather allObjects][0] valueForKey:@"todayWeatherAM"][0] valueForKey:@"tempMinAM"], [[[TodayWeather allObjects][0] valueForKey:@"todayWeatherAM"][0] valueForKey:@"tempMaxAM"]];
+    self.mainView.weatherView.weatherLabel.text = [NSString stringWithFormat:@"%@", [[[TodayWeather allObjects][0] valueForKey:@"todayWeatherAM"][0] valueForKey:@"weatherAM"]];
 }
 
 - (void)todayButtonAction:(UIButton *)sender {
@@ -160,7 +167,6 @@
     weeklyWeather = [[self.parsedItems objectAtIndex:3] componentsSeparatedByString:@"<BR>"];
     
     //Weekly weatherAM
-
     for (int i = 0; i < 14; i++) {
         WeeklyWeatherAM *am = [[WeeklyWeatherAM alloc] init];
         [am setValue:[weeklyWeather objectAtIndex:i] forKey:@"weeklyWeatherAMinfo"];
@@ -189,6 +195,8 @@
     self.weekAM = [[[WeeklyWeather allObjects][0] valueForKey:@"weeklyWeatherAM"] valueForKey:@"weeklyWeatherAMinfo"];
     self.weekPM = [[[WeeklyWeather allObjects][0] valueForKey:@"weeklyWeatherPM"] valueForKey:@"weeklyWeatherPMinfo"];
     self.week = self.weekAM;
+    
+    [self loadData];
 }
 
 - (void)feedParser:(MWFeedParser *)parser didFailWithError:(NSError *)error {
@@ -227,6 +235,26 @@
         [self.week removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]withRowAnimation:UITableViewRowAnimationFade];
     }
+}
+
+- (void)dailySentenceParser {
+    NSURL *dailySentenceURL = [NSURL URLWithString:@"http://www.appledaily.com.tw/index/dailyquote/"];
+    NSData *dailySentenceData = [NSData dataWithContentsOfURL:dailySentenceURL];
+    NSString *strData = [[NSString alloc]initWithData:dailySentenceData encoding:NSUTF8StringEncoding];
+    NSArray *array = [strData componentsSeparatedByString:@"dphs\">"];
+    NSArray *array2 = [[array objectAtIndex:1] componentsSeparatedByString:@"</article>"];
+    NSString *string = [[[array2 objectAtIndex:0] stringByReplacingOccurrencesOfString:@"/" withString:@""] stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSArray *array3 = [string componentsSeparatedByString:@"<p>"];
+    NSLog(@"%@", array3[1]);//每日一句
+    NSArray *array4 = [array3[2] componentsSeparatedByString:@"<h1>"];
+    NSArray *array5 = [array4[1] componentsSeparatedByString:@"<"];
+    NSLog(@"%@", array5[0]);//作者
+    NSArray *array6 = [array4[1] componentsSeparatedByString:@"\""];
+    NSLog(@"%@", array6[1]);//每日一句時間
+    
+    self.mainView.dailySentenceView.dailySentenceLabel.text = array3[1];
+    self.mainView.dailySentenceView.dailyAuthorLabel.text = array5[0];
+    self.mainView.dailySentenceView.dailyDateLabel.text = array6[1];
 }
 
 @end

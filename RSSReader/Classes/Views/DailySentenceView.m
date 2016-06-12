@@ -22,12 +22,11 @@
         [self addSubview:self.dailySentenceLabel];
         
         //dailyDateLabel
-        self.dailyDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 100, self.frame.size.height - 30, 100, 50)];
+        self.dailyDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 100, self.frame.size.height - 40, 80, 30)];
         self.dailyDateLabel.font = [UIFont systemFontOfSize:15];
         self.dailyDateLabel.text = @"20160611";
         self.dailyDateLabel.textAlignment = 2;
         self.dailyDateLabel.numberOfLines = 0;
-        [self.dailyDateLabel sizeToFit];
         [self addSubview:self.dailyDateLabel];
 
         //dailyAuthorLabel
